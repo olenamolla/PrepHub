@@ -18,3 +18,30 @@
 2. Configure PostgreSQL settings in Django
 3. Set up basic Django app structure
 4. Plan initial models for user and problem tracking
+
+---
+
+**Date:** November 7, 2025
+
+**Summary:**
+- Fixed Django settings after renaming project folder
+- Created and registered 'problems' app
+- Defined Problem model and ran migrations
+- Added Problem model to admin panel and created superuser
+- Logged into Django admin and explored its features
+
+**What I Learned:**
+- Difference between Django project and apps
+- How migrations work and why they're needed
+- How to register models with the admin panel
+- What the admin panel is for
+- What an API endpoint is
+
+**Struggles Faced:**
+- ModuleNotFoundError after renaming project folder
+- Understanding Django's app/project structure
+
+**Goals for Next Day:**
+1. Build first API endpoint for Problem model using Django REST Framework
+2. Learn about serializers and viewsets
+3. Test API with tools like Postman or curl
