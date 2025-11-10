@@ -45,3 +45,24 @@
 1. Build first API endpoint for Problem model using Django REST Framework
 2. Learn about serializers and viewsets
 3. Test API with tools like Postman or curl
+
+---
+
+**Date:** November 9, 2025
+
+**Summary:**
+- Installed Django REST Framework (DRF) and added it to `INSTALLED_APPS` in `settings.py`
+- Created `serializers.py` in the `problems` app and implemented `ProblemSerializer` using DRF’s `ModelSerializer`
+- Committed and pushed changes to Git
+
+**What I Learned:**
+- Why DRF is used for building APIs in Django
+- How serializers work and why we subclass `ModelSerializer`
+- The purpose of the `Meta` subclass and the meaning of `model = Problem`
+- How to control which fields are exposed in the API
+
+**Next Steps:**
+1. Create the first API endpoint for the Problem model using DRF ViewSets
+2. Set up routing in `urls.py`
+3. Add basic API tests
+4. Configure CORS for frontend integration
