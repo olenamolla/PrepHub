@@ -66,3 +66,28 @@
 2. Set up routing in `urls.py`
 3. Add basic API tests
 4. Configure CORS for frontend integration
+
+---
+
+**Date:** November 11, 2025
+
+**Summary:**
+- Implemented first API endpoint with `ProblemViewSet (ModelViewSet)`
+- Registered DRF `DefaultRouter` and wired `/api/problems/` routes in `prephub/urls.py`
+- Verified the endpoint via the browsable API (GET `/api/problems/` returns JSON)
+- Added learning notes in `mds/editorial-notes.md` (serializer → viewset → router flow)
+- Committed and pushed changes
+
+**What I Learned (programmer terms):**
+- Routing: `DefaultRouter()` instance generates URL patterns; `register('problems', ProblemViewSet)` binds prefix → class; `include(router.urls)` mounts under `/api/`
+- View layer: `ModelViewSet` provides CRUD actions; configure `queryset` and `serializer_class`
+- Data flow: Request → URLConf → Router → ViewSet action → QuerySet/ORM → Serializer → JSON Response
+
+**Next Steps:**
+1. Add API tests (DRF APIClient):
+	- GET `/api/problems/` returns 200 and a list
+	- POST valid payload returns 201 and persists
+	- POST invalid payload returns 400 with errors
+2. Configure CORS for upcoming frontend work (`django-cors-headers`)
+3. Optional: add ordering by `solved_date` and test retrieve/update/delete
+4. Document endpoints (README or OpenAPI) and keep progress-log updated
