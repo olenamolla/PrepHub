@@ -91,3 +91,28 @@
 2. Configure CORS for upcoming frontend work (`django-cors-headers`)
 3. Optional: add ordering by `solved_date` and test retrieve/update/delete
 4. Document endpoints (README or OpenAPI) and keep progress-log updated
+
+---
+
+**Date:** November 12, 2025
+
+**Summary:**
+- Installed and wired `django-cors-headers` (added to `INSTALLED_APPS` and middleware)
+- Configured CORS policy to allow local frontend origins (`http://localhost:3000`, `http://127.0.0.1:3000`)
+- Reviewed where CORS sits in the architecture (HTTP edge/middleware) and how preflight/data requests flow
+- Test suite for Problem API is passing (3 tests: list, create valid, create invalid)
+
+**Notes:**
+- Skipped the quick CORS verification commands today; configuration changes are in place and can be validated next session
+
+**What I Learned:**
+- CORS runs before view logic; the middleware adds `Access-Control-Allow-*` headers so browsers permit cross-origin calls
+- Preflight (OPTIONS) vs. actual requests and how the router/viewset are only hit after CORS allows the request
+
+**Next Steps:**
+1. Verify CORS manually (preflight and GET) to confirm headers are returned
+2. Update API docs or README with available endpoints and expected payloads
+3. Decide next track:
+   - Start frontend scaffold (React + Vite/CRA) and call `/api/problems/`
+   - Or begin auth foundation (JWT) on the backend
+4. Append any learnings to `mds/editorial-notes.md` as you go
