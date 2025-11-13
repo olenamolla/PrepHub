@@ -64,4 +64,67 @@ Example: GET /api/problems/
 
 Tip: If POST via curl returns 403 (CSRF), use the browsable API or add BasicAuth temporarily in DRF settings for non-browser clients.
 
+---
+
+## Testing Layer: Key Concepts Summary
+
+### Where Testing Fits in Architecture
+- **Layer:** Quality Assurance / Automated Verification
+- **Purpose:** Calls your API like a real client; verifies behavior automatically
+- **Isolation:** Uses a temporary test database (created/destroyed each run)
+
+### Test Data Flow
+```
+Test Code (APITestCase) → Test Client → Django URLConf → Router → ViewSet → Serializer → Test DB
+                                                                              ↓
+Test Code ← Assert results ← Response ← Serializer ← Test DB
+```
+
+### Key Testing Concepts
+
+| Concept | What It Is | Why It Matters |
+|---------|-----------|----------------|
+| `APITestCase` | Base class for API tests | Provides test client & DB isolation |
+| `setUp()` | Runs before each test method | Avoids repeating setup code |
+| `self.client` | Test HTTP client (APIClient) | Makes requests without a browser |
+| `reverse()` | URL name → path converter | Tests don't break if URLs change |
+| `format='json'` | Serialize dict → JSON | Mimics real API requests |
+| Assertions | Verify expected behavior | Tests fail if behavior changes |
+| Test DB | Temporary database | Each test starts fresh, no side effects |
+
+### The Test Pattern (Arrange-Act-Assert)
+1. **Arrange:** Set up data/state (in setUp or test method)
+2. **Act:** Make a request (`self.client.get()` / `.post()` / etc.)
+3. **Assert:** Check status code, response data, DB state
+
+### How Assertions and ViewSet Methods Connect
+**Important:** Assertions don't call ViewSet methods—the test client does.
+
+Flow:
+1. `self.client.post(url, payload)` → makes HTTP POST request
+2. Django routes request → Router → `ProblemViewSet.create()` (auto-provided by ModelViewSet)
+3. `create()` validates via serializer, saves to DB, returns Response with status 201
+4. Response returns to test code
+5. `self.assertEqual(resp.status_code, 201)` → **passively checks** what `create()` returned
+
+**Key insight:** The test client triggers the full request chain; assertions verify the outcome.
+
+### Common Test Assertions
+- `assertEqual(resp.status_code, 200)` → HTTP OK
+- `assertEqual(resp.status_code, 201)` → HTTP Created
+- `assertEqual(resp.status_code, 400)` → HTTP Bad Request (validation failed)
+- `assertIsInstance(resp.json(), list)` → Response is a JSON array
+- `assertEqual(Model.objects.count(), 1)` → DB has 1 record
+- `assertIn('field_name', resp.data)` → Error response includes field
+
+### Running Tests
+```bash
+python backend/manage.py test problems
+```
+
+### Testing Docs
+- DRF Testing: https://www.django-rest-framework.org/api-guide/testing/
+- Django Testing: https://docs.djangoproject.com/en/5.2/topics/testing/overview/
+- HTTP Status Codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
 
