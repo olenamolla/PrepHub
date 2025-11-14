@@ -1,10 +1,44 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import api from './services/api'
 
+
+// TS interface to help catch errors early
+interface Problem {
+  id: number;
+  title: string;
+  difficulty: string;
+  topic: string;
+  notes: string;
+  solved_date: string;
+}
 function App() {
+  const [problems, setProblems] = useState<Problem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   const [count, setCount] = useState(0)
+
+
+  useEffect( () => {
+    const fetchProblems = async () => {
+      try {
+        setLoading(true)
+        const response = await api.get('/problems/')
+        setProblems(response.data)
+        setError(null)
+      } catch (err) {
+        setError('Failed to load problems. Make sure Django server is running.')
+        console.error('Error fetching problems:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProblems()
+  },
+ [])
 
   return (
     <>
