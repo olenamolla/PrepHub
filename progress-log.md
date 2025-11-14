@@ -116,3 +116,43 @@
    - Start frontend scaffold (React + Vite/CRA) and call `/api/problems/`
    - Or begin auth foundation (JWT) on the backend
 4. Append any learnings to `mds/editorial-notes.md` as you go
+
+---
+
+**Date:** November 14, 2025
+
+**Summary:**
+- Verified CORS end-to-end: preflight (OPTIONS) and GET to `/api/problems/` with `Origin: http://localhost:3000` returned the expected `Access-Control-Allow-*` headers; GET returned 200 with JSON
+- Added Vite dev server origins to CORS (`http://localhost:5173`, `http://127.0.0.1:5173`) so the frontend can call the API during development
+- Documented current Problem endpoints in `docs/api/README.md` (list/create with sample payloads and error responses)
+- Scaffolded frontend with Vite + React + TypeScript
+- Installed Axios and created a reusable client in `frontend/src/services/api.ts` (with `.env` support via `VITE_API_BASE_URL`)
+- Implemented the initial data fetch in `frontend/src/App.tsx` using `useEffect`/`useState` and a `Problem` TypeScript interface (UI rendering to be completed next)
+- Resolved npm permissions error (`EACCES`) by resetting ownership of `~/.npm`
+
+**What I Learned:**
+- REST + SPA data flow: Browser → React (Vite dev server) → Axios → DRF (Router/ViewSet/Serializer) → JSON → UI
+- CORS sits at the HTTP edge; preflight vs actual requests; why the `Origin` header matters
+- Vite’s role as a fast dev server (usually on port 5173) and how it impacts CORS
+- Axios vs fetch trade-offs; Axios instances simplify base URL and later JWT interceptors
+- TypeScript interfaces act as contracts for API response shapes and help catch mistakes early
+
+**Struggles Faced:**
+- npm cache permission issue causing `EACCES` during scaffold (fixed with `chown` on `~/.npm`)
+- DisallowedHost/404 at root: understood root (`/`) isn’t routed; use `/api/…` and add hosts as needed
+
+**Next Steps:**
+1. Finish the Problem list UI:
+	- Fix endpoint typo in `App.tsx` from `/problmes/` → `/problems/`
+	- Render the problems list with loading and error states (replace Vite starter content)
+	- Optionally extract a small `ProblemCard` component
+2. Frontend quality:
+	- Add ESLint + Prettier config for the frontend and run a quick lint/format
+	- Commit and push changes
+3. Backend auth (next track):
+	- Add JWT auth with `djangorestframework-simplejwt` (`/api/token/`, `/api/token/refresh`)
+	- Protect Problem endpoints (authenticated access) and update tests/docs
+4. Docs:
+	- Update `docs/api/README.md` if response shapes or auth requirements change
+	- Capture learnings in `mds/editorial-notes.md`
+	- do a 10-minute TypeScript mini-lesson (interfaces, unions, generics) tailored to your current code before we implement ProblemCard and auth.

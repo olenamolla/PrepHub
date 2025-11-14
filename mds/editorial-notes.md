@@ -128,3 +128,55 @@ python backend/manage.py test problems
 - HTTP Status Codes: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 
 
+---
+
+## Frontend Integration: React + Vite + TypeScript + Axios
+
+### Where This Sits in the Architecture
+- Layer: Client/UI (runs in the browser, served locally by Vite during development)
+- Responsibility: Render views, collect user input, call the REST API, display results and errors
+
+### End-to-End Data Flow (SPA)
+Browser → React (components/hooks) → Axios (HTTP client) → DRF (Router → ViewSet → Serializer → DB)
+                                                  ↖ JSON Response ←———————————————↙
+
+### Key Concepts and Why They Matter
+- Vite dev server (usually http://localhost:5173): Fast reloads and modern build pipeline. It’s a separate origin from the API, so CORS must allow it.
+  - Docs: https://vitejs.dev/guide/
+- Axios instance: Centralizes `baseURL` and later auth (JWT) via interceptors; reduces boilerplate across components.
+  - Docs: https://axios-http.com/docs/instance
+- TypeScript interface (e.g., `Problem`): A contract for API data shape that catches mistakes early (e.g., missing fields or typos).
+  - Docs: https://www.typescriptlang.org/docs/handbook/interfaces.html
+- React hooks for data fetching:
+  - `useEffect` triggers the fetch on mount
+  - `useState` stores loading/error/data
+  - Docs: https://react.dev/reference/react
+
+### Minimal Fetch Pattern (What Happens Conceptually)
+1) On component mount, call `GET /api/problems/`
+2) While waiting, show a loading state
+3) On success, store the list and render it
+4) On error, store the error message and render an error UI
+
+### CORS in Practice (during development)
+- The browser enforces CORS. When the frontend (5173) calls the API (8000), the request is cross-origin.
+- `django-cors-headers` adds `Access-Control-Allow-*` headers if the `Origin` is allowed:
+  - Preflight (OPTIONS) → middleware responds with allowed methods/headers
+  - Actual request (GET/POST) → response includes `Access-Control-Allow-Origin`
+- Ensure the exact dev origins are allowed:
+  - `http://localhost:5173`, `http://127.0.0.1:5173`
+  - Docs: https://github.com/adamchainz/django-cors-headers
+
+### Common Pitfalls and Fixes
+- Endpoint typos (e.g., `/problmes/` vs `/problems/`) → 404 or network error
+- Server not running → network error; check backend terminal
+- Wrong `Origin` in CORS or missing dev origin → no `Access-Control-Allow-Origin` header
+- Shape mismatch → TypeScript errors or undefined fields at runtime
+
+### Preparing for Auth (Next Iteration)
+- Introduce JWT with `djangorestframework-simplejwt` (`/api/token/`, `/api/token/refresh`).
+- In Axios, add an interceptor to attach `Authorization: Bearer <token>`.
+- Handle 401/403 globally (refresh token or redirect to login).
+- Docs: https://django-rest-framework-simplejwt.readthedocs.io/
+
+
